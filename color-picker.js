@@ -4,6 +4,7 @@ class ColorPicker {
     this.colorPickerEl = document.querySelector('canvas');
     this.hueBarEl = document.querySelector('.hue-bar');
     this.hueHandleEl = document.querySelector('.hue-handle');
+    this.colorHandleEl = document.querySelector('.color-handle');
     this.pickedColorEl = document.querySelector('.picked-color');
 
     this.huePickerWidth = this.hueBarEl.offsetWidth;
@@ -18,6 +19,7 @@ class ColorPicker {
 
     this.updateColor();
     this.drawColorGradient();
+    this.updateHandleColors();
     this.addEventListeners();
   }
 
@@ -33,6 +35,7 @@ class ColorPicker {
     this.sat = (x * 100) / this.canvasWidth;
     this.val = (((y - 176) * -1) * 100) / this.canvasHeight;
 
+    this.moveColorHandle(x, y);
     this.updateColor();
   }
 
@@ -42,14 +45,25 @@ class ColorPicker {
     this.hue = Math.round(degree);
 
 
-    this.moveHueHandle(x, degree);
+    this.moveHueHandle(x);
     this.updateColor();
     this.drawColorGradient();
   }
 
-  moveHueHandle(position, degree) {
+  moveColorHandle(positionX, positionY) {
+    this.colorHandleEl.style.transform = `translateX(${positionX}px) translateY(${positionY}px)`;
+    this.updateHandleColors();
+  }
+
+  moveHueHandle(position) {
     this.hueHandleEl.style.transform = `translateX(${position}px)`;
-    this.hueHandleEl.style.backgroundColor = `hsl(${degree}, 100%, 50%)`;
+    this.updateHandleColors();
+  }
+
+  updateHandleColors() {
+    const hsl = this.convertHSVToHSL(this.hue, this.sat/100, this.val/100);
+    this.colorHandleEl.style.backgroundColor = `hsl(${this.hue}, ${hsl.s}%, ${hsl.l}%)`;
+    this.hueHandleEl.style.backgroundColor = `hsl(${this.hue}, 100%, 50%)`;
   }
 
   updateColor() {

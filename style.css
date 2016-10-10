@@ -19,9 +19,37 @@ body {
   justify-content: space-between;
 }
 
+.container {
+  -webkit-box-shadow: 0px 1px 4px 0px rgba(0,0,0,0.2);
+  box-shadow: 0px 1px 4px 0px rgba(0,0,0,0.2);
+}
+
+.color-handle,
+.hue-handle {
+  width: 20px;
+  height: 20px;
+  border-radius: 10px;
+  background: red;
+  border: 2px solid #fff;
+  cursor:pointer;
+}
+
+.color-spectrum {
+  position: relative;
+}
+
+.color-handle {
+  position: absolute;
+  top: -10px;
+  left: -10px
+}
+
+
+
 .hue {
   position: relative;
-  margin: 1.5em auto;
+  margin: 0 auto;
+  padding: 1.5em 0;
   width: 80%;
 }
 
@@ -36,15 +64,11 @@ body {
 
 .hue-handle {
   position: absolute;
-  left:-10px;
-  top:-5px;
-  width: 20px;
-  height: 20px;
-  border-radius: 10px;
-  background: red;
-  border: 2px solid #fff;
-  cursor:pointer;
+  left: -10px;
+  top: 18px;
   z-index: 2;
+  will-change: tranform;
+  transition: transform 0.3s cubic-bezier(0,0,0.3,1);
 }
 
 .color-picker canvas {
