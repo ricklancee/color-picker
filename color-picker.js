@@ -167,12 +167,3 @@ class ColorPicker {
 }
 
 window.addEventListener('load', () => new ColorPicker());
-
-
-
-
-
-
-
-
-
