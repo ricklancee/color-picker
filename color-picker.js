@@ -10,6 +10,7 @@ class ColorPicker {
     const colorPickerBCR = this.colorPickerEl.getBoundingClientRect();
     const huePickerBCR = this.hueBarEl.getBoundingClientRect();
 
+    this.hueHandleHeight = this.hueHandleEl.offsetHeight;
     this.huePickerWidth = huePickerBCR.width;
     this.huePickerX = huePickerBCR.left;
 
@@ -114,7 +115,7 @@ class ColorPicker {
 
   _onColorPickerMouseMove(event) {
     let x = event.pageX - this.canvasX;
-    let y = event.pageY - this.canvasY;
+    let y = event.pageY - this.canvasY - (this.hueHandleHeight / 2);
     if (x < 0) x = 0;
     if (x > this.canvasWidth) x = this.canvasWidth;
     if (y < 0) y = 0;
@@ -251,7 +252,6 @@ class ColorPicker {
   convertRGBToHEX(r, g, b) {
       return "#" + this._componentToHex(r) + this._componentToHex(g) + this._componentToHex(b);
   }
-
 }
 
 window.addEventListener('load', () => new ColorPicker());
