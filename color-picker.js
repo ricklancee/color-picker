@@ -61,15 +61,15 @@ class ColorPicker {
   }
 
   updateHandleColors() {
-    const hsl = this.convertHSVToHSL(this.hue, this.sat/100, this.val/100);
+    const hsl = this.convertHSVToHSL(this.hue, this.sat, this.val);
     this.colorHandleEl.style.backgroundColor = `hsl(${this.hue}, ${hsl.s}%, ${hsl.l}%)`;
     this.hueHandleEl.style.backgroundColor = `hsl(${this.hue}, 100%, 50%)`;
   }
 
   updateColor() {
     const hex = this.convertHSVToHEX(this.hue, this.sat, this.val);
-    const hsl = this.convertHSVToHSL(this.hue, this.sat/100, this.val/100);
-    const rgb = this.convertHSVToRGB(this.hue/360, this.sat/100, this.val/100);
+    const hsl = this.convertHSVToHSL(this.hue, this.sat, this.val);
+    const rgb = this.convertHSVToRGB(this.hue, this.sat, this.val);
 
     this.pickedColorEl.innerHTML = `${hex}<br>
       rgb(${rgb.r}, ${rgb.g}, ${rgb.b})<br>
@@ -88,9 +88,9 @@ class ColorPicker {
   }
 
   drawColorGradient() {
-    for (let v = 100; v >= 0; v--) {
-      const start = this.convertHSVToHSL(this.hue, 0, v/100);
-      const end = this.convertHSVToHSL(this.hue, 1, v/100);
+    for (let value = 100; value >= 0; value--) {
+      const start = this.convertHSVToHSL(this.hue, 0, value);
+      const end = this.convertHSVToHSL(this.hue, 100, value);
 
       const gradient = this.canvas.createLinearGradient(0, 0, this.canvasWidth, 0);
 
@@ -98,7 +98,7 @@ class ColorPicker {
       gradient.addColorStop(0, `hsl(${start.h}, ${start.s}%, ${start.l}%)`);
       gradient.addColorStop(1, `hsl(${end.h}, ${end.s}%, ${end.l}%)`);
 
-      let percentage = (v - 100) * -1;
+      let percentage = (value - 100) * -1;
 
       this.canvas.fillStyle = gradient;
       this.canvas.fillRect(0, (this.canvasHeight/100) * percentage, this.canvasWidth, this.canvasHeight/100 + 1);
@@ -106,7 +106,10 @@ class ColorPicker {
   }
 
   convertHSVToHSL(h, s, v) {
-    var l = (2 - s) * v / 2;
+    s = s/100;
+    v = v/100;
+
+    let l = (2 - s) * v / 2;
 
     if (l != 0) {
         if (l == 1) {
@@ -126,15 +129,16 @@ class ColorPicker {
   }
 
   convertHSVToHEX(h, s, v) {
-    const rgb = this.convertHSVToRGB(h/360, s/100, v/100);
+    const rgb = this.convertHSVToRGB(h, s, v);
     return this.convertRGBToHEX(rgb.r, rgb.g, rgb.b);
   }
 
   convertHSVToRGB(h, s, v) {
-    var r, g, b, i, f, p, q, t;
-    if (arguments.length === 1) {
-        s = h.s, v = h.v, h = h.h;
-    }
+    h = h/360;
+    s = s/100;
+    v = v/100;
+
+    let r, g, b, i, f, p, q, t;
     i = Math.floor(h * 6);
     f = h * 6 - i;
     p = v * (1 - s);
