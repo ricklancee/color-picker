@@ -7,12 +7,16 @@ class ColorPicker {
     this.colorHandleEl = document.querySelector('.color-handle');
     this.pickedColorEl = document.querySelector('.picked-color');
 
+    const colorPickerBCR = this.colorPickerEl.getBoundingClientRect();
     const huePickerBCR = this.hueBarEl.getBoundingClientRect();
-    this.huePickerWidth = huePickerBCR.width;
-    this.huePickerPositionX = huePickerBCR.left;
 
-    this.canvasWidth = this.colorPickerEl.width;
-    this.canvasHeight = this.colorPickerEl.height;
+    this.huePickerWidth = huePickerBCR.width;
+    this.huePickerX = huePickerBCR.left;
+
+    this.canvasX = colorPickerBCR.left;
+    this.canvasY = colorPickerBCR.top;
+    this.canvasWidth = colorPickerBCR.width;
+    this.canvasHeight = colorPickerBCR.height;
 
     this.canvas = this.colorPickerEl.getContext('2d');
 
@@ -35,6 +39,35 @@ class ColorPicker {
   addEventListeners() {
     this.colorPickerEl.addEventListener('click', this.onCanvasClick.bind(this));
     this.hueBarEl.addEventListener('click', this.onHueBarClick.bind(this));
+
+    const onHuebarMove = this.onHueBarMouseMove.bind(this);
+    const onColorPickerMove = this.onColorPickerMouseMove.bind(this);
+    const body = document.body;
+
+    this.colorHandleEl.addEventListener('mousedown', () => {
+      console.log('mousedown');
+      body.addEventListener('mousemove', onColorPickerMove);
+    });
+
+    this.hueHandleEl.addEventListener('mousedown', () => {
+      this.hueHandleEl.classList.remove('hue-handle--animatable');
+      body.addEventListener('mousemove', onHuebarMove);
+    });
+
+    body.addEventListener('mouseup', () => {
+      this.hueHandleEl.classList.add('hue-handle--animatable');
+      body.removeEventListener('mousemove', onHuebarMove);
+      body.removeEventListener('mousemove', onColorPickerMove);
+    });
+
+    document.addEventListener('mouseout', event => {
+      var from = event.relatedTarget || event.toElement;
+      if (!from || from.nodeName == "HTML") {
+        this.hueHandleEl.classList.add('hue-handle--animatable');
+        body.removeEventListener('mousemove', onHuebarMove);
+        body.removeEventListener('mousemove', onColorPickerMove);
+      }
+    });
   }
 
   onCanvasClick(event) {
@@ -50,7 +83,7 @@ class ColorPicker {
   }
 
   onHueBarClick(event) {
-    let x = event.pageX - this.huePickerPositionX;
+    let x = event.pageX - this.huePickerX;
 
     if (x < 0 || x > this.huePickerWidth) {
       return;
@@ -63,6 +96,36 @@ class ColorPicker {
     this.updateHandleColors();
     this.updateColor();
     this.drawColorGradient();
+  }
+
+  onHueBarMouseMove(event) {
+    let x = event.pageX - this.huePickerX;
+    if (x < 0) x = 0;
+    if (x > this.huePickerWidth) x = this.huePickerWidth;
+
+    const degree = (x * 360) / this.huePickerWidth;
+    this.hue = Math.round(degree);
+
+    this.moveHueHandle();
+    this.updateHandleColors();
+    this.updateColor();
+    this.drawColorGradient();
+  }
+
+  onColorPickerMouseMove(event) {
+    let x = event.pageX - this.canvasX;
+    let y = event.pageY - this.canvasY;
+    if (x < 0) x = 0;
+    if (x > this.canvasWidth) x = this.canvasWidth;
+    if (y < 0) y = 0;
+    if (y > this.canvasHeight) y = this.canvasHeight;
+
+    this.sat = (x * 100) / this.canvasWidth;
+    this.val = (((y - this.canvasHeight) * -1) * 100) / this.canvasHeight;
+
+    this.moveColorHandle();
+    this.updateHandleColors();
+    this.updateColor();
   }
 
   moveColorHandle() {
@@ -89,8 +152,7 @@ class ColorPicker {
     const rgb = this.convertHSVToRGB(this.hue, this.sat, this.val);
 
     this.pickedColorEl.innerHTML = `${hex}<br>
-      rgb(${rgb.r}, ${rgb.g}, ${rgb.b})<br>
-      hsl(${hsl.h}, ${hsl.s}%, ${hsl.l}%)`;
+      rgb(${rgb.r}, ${rgb.g}, ${rgb.b})`;
     this.pickedColorEl.style.backgroundColor = `${hex}`;
 
     if (this.sat < 40) {
@@ -100,7 +162,11 @@ class ColorPicker {
         this.pickedColorEl.style.color = '#000';
       }
     } else {
-      this.pickedColorEl.style.color = '#fff';
+      if (this.hue > 51 && this.hue <= 98) {
+        this.pickedColorEl.style.color = '#000';
+      } else {
+        this.pickedColorEl.style.color = '#fff';
+      }
     }
   }
 
@@ -121,6 +187,8 @@ class ColorPicker {
     }
   }
 
+  // Color conversions
+  //
   convertHSVToHSL(h, s, v) {
     s = s/100;
     v = v/100;
