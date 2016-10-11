@@ -7,7 +7,7 @@ html {
 }
 
 body {
-  font-family: 'Lucida Grande', sans-serif;
+  font-family: 'Roboto', 'Lucida Grande', sans-serif;
 }
 
 .main {
@@ -44,8 +44,6 @@ body {
   left: -10px
 }
 
-
-
 .hue {
   position: relative;
   margin: 0 auto;
@@ -80,6 +78,7 @@ body {
 
 .picked-color {
   width: 100%;
+  font-family: 400;
   height: 100px;
   background: #ccc;
   margin-bottom: 1.5em;
