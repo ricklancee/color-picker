@@ -41,7 +41,8 @@ body {
 .color-handle {
   position: absolute;
   top: -10px;
-  left: -10px
+  left: -10px;
+  will-change: transform;
 }
 
 .hue {
@@ -65,7 +66,7 @@ body {
   left: -10px;
   top: 18px;
   z-index: 2;
-  will-change: tranform;
+  will-change: transform;
 }
 
 .hue-handle.hue-handle--animatable {
