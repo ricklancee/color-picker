@@ -122,7 +122,6 @@ class ColorPicker {
     const body = document.body;
 
     this.colorHandleEl.addEventListener('mousedown', () => {
-      console.log('mousedown');
       body.addEventListener('mousemove', onColorPickerMove);
     });
 
