@@ -22,7 +22,7 @@ class ColorPicker {
     this.canvas = this.colorPickerEl.getContext('2d');
 
     if(this._colorInFragmentId()) {
-      const colors = this._getFramentColors();
+      const colors = this._getColorsFromFragment();
 
       this.hue = colors.h;
       this.sat = colors.s;
@@ -65,7 +65,7 @@ class ColorPicker {
     return true;
   }
 
-  _getFramentColors() {
+  _getColorsFromFragment() {
     let colorHash = window.location.hash.replace('#', '');
 
     if (colorHash.length === 6 || colorHash.length === 3) {
@@ -95,7 +95,7 @@ class ColorPicker {
   }
 
   _updateCanvasByFragment() {
-    const colors = this._getFramentColors();
+    const colors = this._getColorsFromFragment();
     this.hue = colors.h;
     this.sat = colors.s;
     this.val = colors.v;
