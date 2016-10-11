@@ -19,6 +19,8 @@ class ColorPicker {
 
     this.updateColor();
     this.drawColorGradient();
+    this.moveColorHandle();
+    this.moveHueHandle();
     this.updateHandleColors();
     this.addEventListeners();
   }
@@ -33,9 +35,10 @@ class ColorPicker {
     const y = event.offsetY;
 
     this.sat = (x * 100) / this.canvasWidth;
-    this.val = (((y - 176) * -1) * 100) / this.canvasHeight;
+    this.val = (((y - this.canvasHeight) * -1) * 100) / this.canvasHeight;
 
-    this.moveColorHandle(x, y);
+    this.moveColorHandle();
+    this.updateHandleColors();
     this.updateColor();
   }
 
@@ -44,20 +47,22 @@ class ColorPicker {
     const degree = (x * 360) / this.huePickerWidth;
     this.hue = Math.round(degree);
 
-
-    this.moveHueHandle(x);
+    this.moveHueHandle();
+    this.updateHandleColors();
     this.updateColor();
     this.drawColorGradient();
   }
 
-  moveColorHandle(positionX, positionY) {
-    this.colorHandleEl.style.transform = `translateX(${positionX}px) translateY(${positionY}px)`;
-    this.updateHandleColors();
+  moveColorHandle() {
+    const x = (this.sat * this.canvasWidth) / 100;
+    const y = ((this.val * this.canvasHeight) / 100 - this.canvasHeight) * -1;
+
+    this.colorHandleEl.style.transform = `translateX(${x}px) translateY(${y}px)`;
   }
 
-  moveHueHandle(position) {
-    this.hueHandleEl.style.transform = `translateX(${position}px)`;
-    this.updateHandleColors();
+  moveHueHandle() {
+    const x = (this.hue * this.huePickerWidth) / 360;
+    this.hueHandleEl.style.transform = `translateX(${x}px)`;
   }
 
   updateHandleColors() {
@@ -93,7 +98,6 @@ class ColorPicker {
       const end = this.convertHSVToHSL(this.hue, 100, value);
 
       const gradient = this.canvas.createLinearGradient(0, 0, this.canvasWidth, 0);
-
 
       gradient.addColorStop(0, `hsl(${start.h}, ${start.s}%, ${start.l}%)`);
       gradient.addColorStop(1, `hsl(${end.h}, ${end.s}%, ${end.l}%)`);
