@@ -145,6 +145,15 @@ class ColorPicker {
         body.removeEventListener('mousemove', onColorPickerMove);
       }
     });
+
+    window.addEventListener('resize', () => {
+      const colorPickerBCR = this.colorPickerEl.getBoundingClientRect();
+      const huePickerBCR = this.hueBarEl.getBoundingClientRect();
+
+      this.huePickerX = huePickerBCR.left;
+      this.canvasX = colorPickerBCR.left;
+      this.canvasY = colorPickerBCR.top;
+    });
   }
 
 
