@@ -2,12 +2,15 @@ class ColorPicker {
 
   constructor() {
     this.colorPickerEl = document.querySelector('canvas');
-    this.hueBarEl = document.querySelector('.hue-bar');
+    this.hueBarEl = document.querySelector('.hue');
     this.hueHandleEl = document.querySelector('.hue-handle');
     this.colorHandleEl = document.querySelector('.color-handle');
     this.pickedColorEl = document.querySelector('.picked-color');
 
-    this.huePickerWidth = this.hueBarEl.offsetWidth;
+    const huePickerBCR = this.hueBarEl.getBoundingClientRect();
+    this.huePickerWidth = huePickerBCR.width;
+    this.huePickerPositionX = huePickerBCR.left;
+
     this.canvasWidth = this.colorPickerEl.width;
     this.canvasHeight = this.colorPickerEl.height;
 
@@ -47,7 +50,12 @@ class ColorPicker {
   }
 
   onHueBarClick(event) {
-    const x = event.offsetX;
+    let x = event.pageX - this.huePickerPositionX;
+
+    if (x < 0 || x > this.huePickerWidth) {
+      return;
+    }
+
     const degree = (x * 360) / this.huePickerWidth;
     this.hue = Math.round(degree);
 
