@@ -10,17 +10,18 @@ class ColorPicker {
     const colorPickerBCR = this.colorPickerEl.getBoundingClientRect();
     const huePickerBCR = this.hueBarEl.getBoundingClientRect();
 
-    this.hueHandleHeight = this.hueHandleEl.offsetHeight;
-    this.huePickerWidth = huePickerBCR.width;
     this.huePickerX = huePickerBCR.left;
-
     this.canvasX = colorPickerBCR.left;
     this.canvasY = colorPickerBCR.top;
+
     this.canvasWidth = colorPickerBCR.width;
+    this.huePickerWidth = huePickerBCR.width;
     this.canvasHeight = colorPickerBCR.height;
+    this.hueHandleHeight = this.hueHandleEl.offsetHeight;
 
     this.canvas = this.colorPickerEl.getContext('2d');
 
+    // REFACTOR: This maybe need to be in another class
     if(this._colorInFragmentId()) {
       const colors = this._getColorsFromFragment();
 
@@ -225,7 +226,6 @@ class ColorPicker {
 
   _updateColor() {
     const hex = this.convertHSVToHEX(this.hue, this.sat, this.val);
-    const hsl = this.convertHSVToHSL(this.hue, this.sat, this.val);
     const rgb = this.convertHSVToRGB(this.hue, this.sat, this.val);
 
     this.pickedColorEl.innerHTML = `${hex}<br>
@@ -239,7 +239,7 @@ class ColorPicker {
         this.pickedColorEl.style.color = '#000';
       }
     } else {
-      if (this.hue > 51 && this.hue <= 98) {
+      if (this.hue > 51 && this.hue <= 98 && this.val > 50) {
         this.pickedColorEl.style.color = '#000';
       } else {
         this.pickedColorEl.style.color = '#fff';
