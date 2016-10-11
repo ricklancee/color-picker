@@ -21,9 +21,17 @@ class ColorPicker {
 
     this.canvas = this.colorPickerEl.getContext('2d');
 
-    this.hue = 215;
-    this.sat = 100;
-    this.val = 100;
+    if(this._colorInFragmentId()) {
+      const colors = this._getFramentColors();
+
+      this.hue = colors.h;
+      this.sat = colors.s;
+      this.val = colors.v;
+    } else {
+      this.hue = 215;
+      this.sat = 100;
+      this.val = 100;
+    }
 
     this._updateColor();
     this._drawColorGradient();
@@ -37,7 +45,75 @@ class ColorPicker {
     requestAnimationFrame(_ => this.hueHandleEl.classList.add('hue-handle--animatable'));
   }
 
+  _colorInFragmentId() {
+    if (!window.location.hash)
+      return false;
+
+    let hash = window.location.hash.replace('#', '');
+
+    if (hash.length === 6 || hash.length === 3) {
+      hash = '#' + hash;
+    }
+
+    try {
+      const gradient = this.canvas.createLinearGradient(0, 0, 0, 0);
+      gradient.addColorStop(0, hash);
+    } catch(err) {
+      return false;
+    }
+
+    return true;
+  }
+
+  _getFramentColors() {
+    let colorHash = window.location.hash.replace('#', '');
+
+    if (colorHash.length === 6 || colorHash.length === 3) {
+      colorHash = '#' + colorHash;
+    }
+
+    // If it's hex
+    if (colorHash.indexOf('#') === 0) {
+      const rgb = this.convertHEXToRGB(colorHash);
+      const hsv = this.convertRGBToHSV(rgb.r, rgb.g, rgb.b);
+      return hsv;
+    }
+
+    // If it's rgb
+    if (colorHash.indexOf('rgb') === 0) {
+      const rgb = colorHash.match(/rgb\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*\)/i);
+      const hsv = this.convertRGBToHSV(parseInt(rgb[1]), parseInt(rgb[2]), parseInt(rgb[3]));
+      return hsv;
+    }
+
+    // If its hsl
+    if (colorHash.indexOf('hsl') === 0) {
+      const hsl = colorHash.match(/hsl\(\s*(\d+)º?\s*,\s*(\d+)%?\s*,\s*(\d+)%?\s*\)/i);
+      const hsv = this.convertHSLToHSV(parseInt(hsl[1]), parseInt(hsl[2]), parseInt(hsl[3]));
+      return hsv;
+    }
+  }
+
+  _updateCanvasByFragment() {
+    const colors = this._getFramentColors();
+    this.hue = colors.h;
+    this.sat = colors.s;
+    this.val = colors.v;
+
+    this._updateColor();
+    this._drawColorGradient();
+    this._moveColorHandle();
+    this._moveHueHandle();
+    this._updateHandleColors();
+  }
+
   _addEventListeners() {
+    window.addEventListener('hashchange', () => {
+      if (this._colorInFragmentId()) {
+        this._updateCanvasByFragment();
+      }
+    });
+
     this.colorPickerEl.addEventListener('click', this._onCanvasClick.bind(this));
     this.hueBarEl.addEventListener('click', this._onHueBarClick.bind(this));
 
@@ -70,6 +146,7 @@ class ColorPicker {
       }
     });
   }
+
 
   _onCanvasClick(event) {
     const x = event.offsetX;
@@ -251,6 +328,62 @@ class ColorPicker {
 
   convertRGBToHEX(r, g, b) {
       return "#" + this._componentToHex(r) + this._componentToHex(g) + this._componentToHex(b);
+  }
+
+  convertHEXToRGB(hex) {
+    var shorthandRegex = /^#?([a-f\d])([a-f\d])([a-f\d])$/i;
+    hex = hex.replace(shorthandRegex, function(m, r, g, b) {
+        return r + r + g + g + b + b;
+    });
+
+    var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+    return result ? {
+        r: parseInt(result[1], 16),
+        g: parseInt(result[2], 16),
+        b: parseInt(result[3], 16)
+    } : null;
+  }
+
+  convertRGBToHSV(r, g, b) {
+    var max = Math.max(r, g, b), min = Math.min(r, g, b),
+        d = max - min,
+        h,
+        s = (max === 0 ? 0 : d / max),
+        v = max / 255;
+
+    switch (max) {
+        case min: h = 0; break;
+        case r: h = (g - b) + d * (g < b ? 6: 0); h /= 6 * d; break;
+        case g: h = (b - r) + d * 2; h /= 6 * d; break;
+        case b: h = (r - g) + d * 4; h /= 6 * d; break;
+    }
+
+    return {
+        h: Math.round(h * 360),
+        s: Math.round(s * 100),
+        v: Math.round(v * 100)
+    };
+  }
+
+  convertHSLToHSV(h, s, l) {
+    h = h / 360;
+    s = s / 100;
+    l = l / 100;
+
+    var _h = h,
+        _s,
+        _v;
+
+    l *= 2;
+    s *= (l <= 1) ? l : 2 - l;
+    _v = (l + s) / 2;
+    _s = (2 * s) / (l + s);
+
+    return {
+        h: Math.round(_h * 360),
+        s: Math.round(_s * 100),
+        v: Math.round(_v * 100)
+    };
   }
 }
 
