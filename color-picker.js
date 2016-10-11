@@ -24,24 +24,24 @@ class ColorPicker {
     this.sat = 100;
     this.val = 100;
 
-    this.updateColor();
-    this.drawColorGradient();
-    this.moveColorHandle();
-    this.moveHueHandle();
-    this.updateHandleColors();
-    this.addEventListeners();
+    this._updateColor();
+    this._drawColorGradient();
+    this._moveColorHandle();
+    this._moveHueHandle();
+    this._updateHandleColors();
+    this._addEventListeners();
 
     // Wait a frame and add the animatable class
     // to the hue handle to avoid an animation on page load.
     requestAnimationFrame(_ => this.hueHandleEl.classList.add('hue-handle--animatable'));
   }
 
-  addEventListeners() {
-    this.colorPickerEl.addEventListener('click', this.onCanvasClick.bind(this));
-    this.hueBarEl.addEventListener('click', this.onHueBarClick.bind(this));
+  _addEventListeners() {
+    this.colorPickerEl.addEventListener('click', this._onCanvasClick.bind(this));
+    this.hueBarEl.addEventListener('click', this._onHueBarClick.bind(this));
 
-    const onHuebarMove = this.onHueBarMouseMove.bind(this);
-    const onColorPickerMove = this.onColorPickerMouseMove.bind(this);
+    const onHuebarMove = this._onHueBarMouseMove.bind(this);
+    const onColorPickerMove = this._onColorPickerMouseMove.bind(this);
     const body = document.body;
 
     this.colorHandleEl.addEventListener('mousedown', () => {
@@ -70,19 +70,19 @@ class ColorPicker {
     });
   }
 
-  onCanvasClick(event) {
+  _onCanvasClick(event) {
     const x = event.offsetX;
     const y = event.offsetY;
 
     this.sat = (x * 100) / this.canvasWidth;
     this.val = (((y - this.canvasHeight) * -1) * 100) / this.canvasHeight;
 
-    this.moveColorHandle();
-    this.updateHandleColors();
-    this.updateColor();
+    this._moveColorHandle();
+    this._updateHandleColors();
+    this._updateColor();
   }
 
-  onHueBarClick(event) {
+  _onHueBarClick(event) {
     let x = event.pageX - this.huePickerX;
 
     if (x < 0 || x > this.huePickerWidth) {
@@ -92,13 +92,13 @@ class ColorPicker {
     const degree = (x * 360) / this.huePickerWidth;
     this.hue = Math.round(degree);
 
-    this.moveHueHandle();
-    this.updateHandleColors();
-    this.updateColor();
-    this.drawColorGradient();
+    this._moveHueHandle();
+    this._updateHandleColors();
+    this._updateColor();
+    this._drawColorGradient();
   }
 
-  onHueBarMouseMove(event) {
+  _onHueBarMouseMove(event) {
     let x = event.pageX - this.huePickerX;
     if (x < 0) x = 0;
     if (x > this.huePickerWidth) x = this.huePickerWidth;
@@ -106,13 +106,13 @@ class ColorPicker {
     const degree = (x * 360) / this.huePickerWidth;
     this.hue = Math.round(degree);
 
-    this.moveHueHandle();
-    this.updateHandleColors();
-    this.updateColor();
-    this.drawColorGradient();
+    this._moveHueHandle();
+    this._updateHandleColors();
+    this._updateColor();
+    this._drawColorGradient();
   }
 
-  onColorPickerMouseMove(event) {
+  _onColorPickerMouseMove(event) {
     let x = event.pageX - this.canvasX;
     let y = event.pageY - this.canvasY;
     if (x < 0) x = 0;
@@ -123,30 +123,30 @@ class ColorPicker {
     this.sat = (x * 100) / this.canvasWidth;
     this.val = (((y - this.canvasHeight) * -1) * 100) / this.canvasHeight;
 
-    this.moveColorHandle();
-    this.updateHandleColors();
-    this.updateColor();
+    this._moveColorHandle();
+    this._updateHandleColors();
+    this._updateColor();
   }
 
-  moveColorHandle() {
+  _moveColorHandle() {
     const x = (this.sat * this.canvasWidth) / 100;
     const y = ((this.val * this.canvasHeight) / 100 - this.canvasHeight) * -1;
 
     this.colorHandleEl.style.transform = `translateX(${x}px) translateY(${y}px)`;
   }
 
-  moveHueHandle() {
+  _moveHueHandle() {
     const x = (this.hue * this.huePickerWidth) / 360;
     this.hueHandleEl.style.transform = `translateX(${x}px)`;
   }
 
-  updateHandleColors() {
+  _updateHandleColors() {
     const hsl = this.convertHSVToHSL(this.hue, this.sat, this.val);
     this.colorHandleEl.style.backgroundColor = `hsl(${this.hue}, ${hsl.s}%, ${hsl.l}%)`;
     this.hueHandleEl.style.backgroundColor = `hsl(${this.hue}, 100%, 50%)`;
   }
 
-  updateColor() {
+  _updateColor() {
     const hex = this.convertHSVToHEX(this.hue, this.sat, this.val);
     const hsl = this.convertHSVToHSL(this.hue, this.sat, this.val);
     const rgb = this.convertHSVToRGB(this.hue, this.sat, this.val);
@@ -170,7 +170,7 @@ class ColorPicker {
     }
   }
 
-  drawColorGradient() {
+  _drawColorGradient() {
     for (let value = 100; value >= 0; value--) {
       const start = this.convertHSVToHSL(this.hue, 0, value);
       const end = this.convertHSVToHSL(this.hue, 100, value);
@@ -214,7 +214,7 @@ class ColorPicker {
 
   convertHSVToHEX(h, s, v) {
     const rgb = this.convertHSVToRGB(h, s, v);
-    return this.convertRGBToHEX(rgb.r, rgb.g, rgb.b);
+    return this._convertRGBToHEX(rgb.r, rgb.g, rgb.b);
   }
 
   convertHSVToRGB(h, s, v) {
@@ -243,13 +243,13 @@ class ColorPicker {
     };
   }
 
-  componentToHex(c) {
+  _componentToHex(c) {
     var hex = c.toString(16);
     return hex.length == 1 ? "0" + hex : hex;
   }
 
-  convertRGBToHEX(r, g, b) {
-      return "#" + this.componentToHex(r) + this.componentToHex(g) + this.componentToHex(b);
+  _convertRGBToHEX(r, g, b) {
+      return "#" + this._componentToHex(r) + this._componentToHex(g) + this._componentToHex(b);
   }
 
 }
