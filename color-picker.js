@@ -214,7 +214,7 @@ class ColorPicker {
 
   convertHSVToHEX(h, s, v) {
     const rgb = this.convertHSVToRGB(h, s, v);
-    return this._convertRGBToHEX(rgb.r, rgb.g, rgb.b);
+    return this.convertRGBToHEX(rgb.r, rgb.g, rgb.b);
   }
 
   convertHSVToRGB(h, s, v) {
@@ -248,7 +248,7 @@ class ColorPicker {
     return hex.length == 1 ? "0" + hex : hex;
   }
 
-  _convertRGBToHEX(r, g, b) {
+  convertRGBToHEX(r, g, b) {
       return "#" + this._componentToHex(r) + this._componentToHex(g) + this._componentToHex(b);
   }
 
