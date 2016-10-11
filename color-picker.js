@@ -23,6 +23,10 @@ class ColorPicker {
     this.moveHueHandle();
     this.updateHandleColors();
     this.addEventListeners();
+
+    // Wait a frame and add the animatable class
+    // to the hue handle to avoid an animation on page load.
+    requestAnimationFrame(_ => this.hueHandleEl.classList.add('hue-handle--animatable'));
   }
 
   addEventListeners() {

@@ -68,6 +68,9 @@ body {
   top: 18px;
   z-index: 2;
   will-change: tranform;
+}
+
+.hue-handle.hue-handle--animatable {
   transition: transform 0.3s cubic-bezier(0,0,0.3,1);
 }
 
