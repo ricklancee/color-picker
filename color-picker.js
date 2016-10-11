@@ -17,7 +17,6 @@ class ColorPicker {
     this.canvasWidth = colorPickerBCR.width;
     this.huePickerWidth = huePickerBCR.width;
     this.canvasHeight = colorPickerBCR.height;
-    this.hueHandleHeight = this.hueHandleEl.offsetHeight;
 
     this.canvas = this.colorPickerEl.getContext('2d');
 
@@ -201,7 +200,7 @@ class ColorPicker {
 
   _onColorPickerMouseMove(event) {
     let x = event.pageX - this.canvasX;
-    let y = event.pageY - this.canvasY - (this.hueHandleHeight / 2);
+    let y = event.pageY - this.canvasY;
     if (x < 0) x = 0;
     if (x > this.canvasWidth) x = this.canvasWidth;
     if (y < 0) y = 0;
