@@ -235,6 +235,12 @@ class ColorPicker {
   _updateColor() {
     const hex = this.convertHSVToHEX(this.hue, this.sat, this.val);
     const rgb = this.convertHSVToRGB(this.hue, this.sat, this.val);
+    const hsl = this.convertHSVToHSL(this.hue, this.sat, this.val);
+
+    this.hex = hex;
+    this.rgb = rgb;
+    this.hsl = hsl;
+    this.hsv = {h: this.hue, s: this.sat, v:this.val};
 
     this.pickedColorEl.innerHTML = `${hex}<br>
       rgb(${rgb.r}, ${rgb.g}, ${rgb.b})`;
@@ -394,4 +400,6 @@ class ColorPicker {
   }
 }
 
-window.addEventListener('load', () => new ColorPicker());
+let CP;
+
+window.addEventListener('load', () => CP = new ColorPicker());
