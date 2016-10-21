@@ -1,4 +1,4 @@
-class Frament {
+class Fragment {
   constructor() {
 
   }
