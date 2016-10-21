@@ -20,18 +20,10 @@ class ColorPicker {
 
     this.canvas = this.colorPickerEl.getContext('2d');
 
-    // REFACTOR: This maybe need to be in another class
-    if(this._colorInFragmentId()) {
-      const colors = this._getColorsFromFragment();
+    this.hue = 215;
+    this.sat = 100;
+    this.val = 100;
 
-      this.hue = colors.h;
-      this.sat = colors.s;
-      this.val = colors.v;
-    } else {
-      this.hue = 215;
-      this.sat = 100;
-      this.val = 100;
-    }
 
     this._updateColor();
     this._drawColorGradient();
@@ -45,75 +37,7 @@ class ColorPicker {
     requestAnimationFrame(_ => this.hueHandleEl.classList.add('hue-handle--animatable'));
   }
 
-  _colorInFragmentId() {
-    if (!window.location.hash)
-      return false;
-
-    let hash = window.location.hash.replace('#', '');
-
-    if (hash.length === 6 || hash.length === 3) {
-      hash = '#' + hash;
-    }
-
-    try {
-      const gradient = this.canvas.createLinearGradient(0, 0, 0, 0);
-      gradient.addColorStop(0, hash);
-    } catch(err) {
-      return false;
-    }
-
-    return true;
-  }
-
-  _getColorsFromFragment() {
-    let colorHash = window.location.hash.replace('#', '');
-
-    if (colorHash.length === 6 || colorHash.length === 3) {
-      colorHash = '#' + colorHash;
-    }
-
-    // If it's hex
-    if (colorHash.indexOf('#') === 0) {
-      const rgb = this.convertHEXToRGB(colorHash);
-      const hsv = this.convertRGBToHSV(rgb.r, rgb.g, rgb.b);
-      return hsv;
-    }
-
-    // If it's rgb
-    if (colorHash.indexOf('rgb') === 0) {
-      const rgb = colorHash.match(/rgb\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*\)/i);
-      const hsv = this.convertRGBToHSV(parseInt(rgb[1]), parseInt(rgb[2]), parseInt(rgb[3]));
-      return hsv;
-    }
-
-    // If its hsl
-    if (colorHash.indexOf('hsl') === 0) {
-      const hsl = colorHash.match(/hsl\(\s*(\d+)º?\s*,\s*(\d+)%?\s*,\s*(\d+)%?\s*\)/i);
-      const hsv = this.convertHSLToHSV(parseInt(hsl[1]), parseInt(hsl[2]), parseInt(hsl[3]));
-      return hsv;
-    }
-  }
-
-  _updateCanvasByFragment() {
-    const colors = this._getColorsFromFragment();
-    this.hue = colors.h;
-    this.sat = colors.s;
-    this.val = colors.v;
-
-    this._updateColor();
-    this._drawColorGradient();
-    this._moveColorHandle();
-    this._moveHueHandle();
-    this._updateHandleColors();
-  }
-
   _addEventListeners() {
-    window.addEventListener('hashchange', () => {
-      if (this._colorInFragmentId()) {
-        this._updateCanvasByFragment();
-      }
-    });
-
     this.colorPickerEl.addEventListener('click', this._onCanvasClick.bind(this));
     this.hueBarEl.addEventListener('click', this._onHueBarClick.bind(this));
 
